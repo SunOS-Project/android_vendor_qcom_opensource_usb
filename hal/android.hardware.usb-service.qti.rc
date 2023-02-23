@@ -6,6 +6,7 @@ on init
     chown system usb /sys/devices/platform/soc/${vendor.usb.device:-a600000.ssusb}/usb_data_enabled
 
 service vendor.usb-hal /vendor/bin/hw/android.hardware.usb-service.qti
+    interface aidl android.hardware.usb.IUsb/default
     class hal
     user system
     group system mtp usb
