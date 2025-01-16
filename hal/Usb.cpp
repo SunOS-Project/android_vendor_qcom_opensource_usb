@@ -209,17 +209,12 @@ static std::string appendRoleNodeHelper(const std::string &portName, PortRole::T
     std::string node("/sys/class/typec/" + portName);
 
     switch (tag) {
-      case PortRole::mode: {
-        std::string port_type(node + "/port_type");
-        if (!access(port_type.c_str(), F_OK))
-          return port_type;
-        // port_type doesn't exist for UCSI. in that case fall back to data_role
-      }
-      FALLTHROUGH_INTENDED;
       case PortRole::dataRole:
         return node + "/data_role";
       case PortRole::powerRole:
         return node + "/power_role";
+      case PortRole::mode:
+        return node + "/port_type";
       default:
         return "";
     }
@@ -380,10 +375,13 @@ static Status getCurrentRoleHelper(const std::string &portName, bool connected,
   // Mode
 
   if (currentRole.getTag() == PortRole::powerRole) {
+    filename = "/sys/class/typec/" + portName + "/power_role";
     currentRole.set<PortRole::powerRole>(PortPowerRole::NONE);
   } else if (currentRole.getTag() == PortRole::dataRole) {
+    filename = "/sys/class/typec/" + portName + "/data_role";
     currentRole.set<PortRole::dataRole>(PortDataRole::NONE);
   } else if (currentRole.getTag() == PortRole::mode) {
+    filename = "/sys/class/typec/" + portName + "/data_role";
     currentRole.set<PortRole::mode>(PortMode::NONE);
   } else {
     return Status::ERROR;
@@ -409,7 +407,6 @@ static Status getCurrentRoleHelper(const std::string &portName, bool connected,
     }
   }
 
-  filename = appendRoleNodeHelper(portName, currentRole.getTag());
   if (!ReadFileToString(filename, &roleName)) {
     ALOGE("getCurrentRole: Failed to open filesystem node: %s", filename.c_str());
     return Status::ERROR;
@@ -437,8 +434,6 @@ static Status getCurrentRoleHelper(const std::string &portName, bool connected,
       currentRole.set<PortRole::dataRole>(PortDataRole::DEVICE);
     else
       currentRole.set<PortRole::mode>(PortMode::UFP);
-  } else if (roleName == "dual") {
-     currentRole.set<PortRole::mode>(PortMode::DRP);
   } else if (roleName != "none") {
     /* case for none has already been addressed.
      * so we check if the role isn't none.
@@ -810,15 +805,6 @@ static void uevent_event(const unique_fd &uevent_fd, struct Usb *usb) {
 	      SetProperty(VENDOR_USB_ADB_DISABLED_PROP, "1");
 
     }
-  }  else if (std::regex_match(msg, match, offline_regex)) {
-	 if(std::regex_search (msg, match, dwc3_regex))
-	 {
-		 dwc3_sysfs = USB_MODE_PATH + match.str(1) + "/mode";
-		 ALOGE("ERROR:restarting in host mode");
-		 WriteStringToFile("none", dwc3_sysfs);
-		 sleep(1);
-		 WriteStringToFile("host", dwc3_sysfs);
-	 }
  } else if (std::regex_match(msg, match, bus_reset_regex)) {
     std::csub_match devpath = match[1];
     std::csub_match intfpath = match[2];
