@@ -95,6 +95,7 @@ on zygote-start
     mkdir /config/usb_gadget/g1/functions/cser.dun.2 0770 system usb
     mkdir /config/usb_gadget/g1/functions/gsi.rmnet 0770 system usb
     mkdir /config/usb_gadget/g1/functions/gsi.rndis 0770 system usb
+    mkdir /config/usb_gadget/g1/functions/gsi.ncm 0770 system usb
     mkdir /config/usb_gadget/g1/functions/gsi.dpl 0770 system usb
     mkdir /config/usb_gadget/g1/functions/qdss.qdss 0770 system usb
     mkdir /config/usb_gadget/g1/functions/qdss.qdss_mdm 0770 system usb
@@ -1919,7 +1920,7 @@ on property:sys.usb.config=adb && property:sys.usb.configfs=1
     rm /config/usb_gadget/g1/configs/b.1/f8
     rm /config/usb_gadget/g1/configs/b.1/f9
     write /config/usb_gadget/g1/idVendor 0x18d1
-    write /config/usb_gadget/g1/idProduct 0x4ee7
+    write /config/usb_gadget/g1/idProduct 0x4e11
     symlink /config/usb_gadget/g1/configs/b.1 /config/usb_gadget/g1/os_desc/b.1
 
 on property:sys.usb.config=mtp && property:sys.usb.configfs=1

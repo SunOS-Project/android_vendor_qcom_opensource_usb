@@ -590,6 +590,22 @@ Status Usb::getPortStatusHelper(std::vector<PortStatus> &currentPortStatus,
       }
     }
     return Status::SUCCESS;
+  } else { /* /sys/class/typec/ is empty */
+    if (names.size() == 0) {
+      ALOGI("Hardcode parameters for non-typec targets");
+      currentPortStatus.resize(1);
+      /* Assignments are done to support non-TypeC platforms to pass VTS */
+      auto &status = currentPortStatus[0];
+
+      status.supportedModes.clear();
+      status.currentMode = PortMode::NONE;
+      status.currentPowerRole = PortPowerRole::NONE;
+      status.currentDataRole = PortDataRole::NONE;
+      status.canChangeMode = false;
+      status.canChangeDataRole = false;
+      status.canChangePowerRole = false;
+    }
+    return Status::SUCCESS;
   }
 done:
   return Status::ERROR;

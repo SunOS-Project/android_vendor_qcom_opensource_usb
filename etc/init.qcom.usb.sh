@@ -60,8 +60,6 @@ if [ "$(getprop ro.build.type)" != "user" ]; then
 	      "apq")
 		if [ "$target" == "niobe" ] || [ "$target" == "seraph" ] || [ "$target" == "anorak61" ] || [ "$target" == "neo61" ]; then
 			setprop persist.vendor.usb.config diag,qdss,adb
-		elif [ "$target" == "gen5" ]; then
-			setprop persist.vendor.usb.config adb
 		else
 			setprop persist.vendor.usb.config diag,adb
 		fi

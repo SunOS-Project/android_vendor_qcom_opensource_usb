@@ -10,6 +10,10 @@ else
 PRODUCT_PROPERTY_OVERRIDES += vendor.usb.rndis.func.name=gsi
 endif
 
+ifneq ($(filter seraph,$(TARGET_BOARD_PLATFORM)),)
+PRODUCT_PROPERTY_OVERRIDES += vendor.usb.ncm.func.name=gsi
+endif
+
 PRODUCT_PROPERTY_OVERRIDES += vendor.usb.rmnet.func.name=gsi
 PRODUCT_PROPERTY_OVERRIDES += vendor.usb.rmnet.inst.name=rmnet
 PRODUCT_PROPERTY_OVERRIDES += vendor.usb.dpl.inst.name=dpl
